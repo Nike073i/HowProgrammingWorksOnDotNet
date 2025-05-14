@@ -18,12 +18,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
             values.ToList().ForEach(list.AddFirst);
 
             // Assert
-            bool insertInTheHeadMustBeReversedInput = values
-                .Reverse()
-                .Zip(list)
-                .All(tuple => tuple.First == tuple.Second);
-
-            Assert.True(insertInTheHeadMustBeReversedInput);
+            Assert.Equal(values.Reverse(), list);
         }
 
         private class AddInHeadTheoryData : TheoryDataContainer.OneArg<IEnumerable<int>>
