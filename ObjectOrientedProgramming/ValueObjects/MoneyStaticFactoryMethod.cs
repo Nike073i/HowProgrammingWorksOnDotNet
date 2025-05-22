@@ -32,7 +32,7 @@ public record Money
         };
     }
 
-    public static implicit operator Money(decimal amount) => new(amount);
+    public static implicit operator Money(decimal amount) => Create(amount);
 }
 
 public class MoneyTests
