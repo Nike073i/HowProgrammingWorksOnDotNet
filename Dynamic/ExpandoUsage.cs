@@ -29,6 +29,10 @@ public class ExpandoUsage
         Assert.True(agePropChanged);
         Assert.Throws<RuntimeBinderException>(() => user.Age);
         Assert.False(((IDictionary<string, object>)user).ContainsKey("Age"));
+
+        Assert.Throws<RuntimeBinderException>(() => user.Address.City = "Ulyanovsk");
+        user.Address = new ExpandoObject();
+        user.Address.City = "Ulyanovsk";
     }
 
     [Fact]
