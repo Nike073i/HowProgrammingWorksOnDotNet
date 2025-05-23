@@ -12,7 +12,7 @@ public class MonteCarloExample
         {
             double dx = center.X - point.X;
             double dy = center.Y - point.Y;
-            return Math.Sqrt(dx * dx + dy * dy) < r;
+            return Math.Sqrt(dx * dx + dy * dy) <= r;
         }
     }
 
