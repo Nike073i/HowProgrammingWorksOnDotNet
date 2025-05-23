@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace HowProgrammingWorksOnDotNet.Aisd.NumericalAlgorithms.Integration;
 
 public class MonteCarloExample
