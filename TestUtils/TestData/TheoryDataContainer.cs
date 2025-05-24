@@ -33,5 +33,10 @@ namespace HowProgrammingWorksOnDotNet.TestUtils.TheoryData
         {
             protected void Add(T1 t1, T2 t2, T3 t3) => AddRow(t1, t2, t3);
         }
+
+        public abstract class FourArg<T1, T2, T3, T4> : TheoryDataContainer
+        {
+            protected void Add(T1 t1, T2 t2, T3 t3, T4 t4) => AddRow(t1, t2, t3, t4);
+        }
     }
 }

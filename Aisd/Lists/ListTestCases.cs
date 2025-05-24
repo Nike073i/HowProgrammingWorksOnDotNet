@@ -18,7 +18,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
             values.ToList().ForEach(list.AddFirst);
 
             // Assert
-            Assert.Equal(values.Reverse(), list);
+            Assert.Equal(values.Reverse(), list.Select(lv => lv.Value));
         }
 
         private class AddInHeadTheoryData : TheoryDataContainer.OneArg<IEnumerable<int>>
@@ -39,7 +39,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
             var list = CreateList(values);
 
             // Assert
-            Assert.Equal(values, list);
+            Assert.Equal(values, list.Select(lv => lv.Value));
         }
 
         private class AddLastTestData : TheoryDataContainer.OneArg<IEnumerable<int>>
@@ -67,7 +67,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
 
             // Assert
             Assert.Equal(expectedRemoved, removed);
-            Assert.Equal(input.Skip(1), list);
+            Assert.Equal(input.Skip(1), list.Select(lv => lv.Value));
         }
 
         private class RemoveFirstTestData
@@ -96,7 +96,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
 
             // Assert
             Assert.Equal(expectedRemoved, removed);
-            Assert.Equal(input.SkipLast(1), list);
+            Assert.Equal(input.SkipLast(1), list.Select(lv => lv.Value));
         }
 
         private class RemoveLastTestData
@@ -142,7 +142,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
             var list = CreateList(values);
 
             // Act & Assert
-            Assert.Equal(values, list);
+            Assert.Equal(values, list.Select(lv => lv.Value));
         }
 
         private class EnumerationTestData : TheoryDataContainer.OneArg<IEnumerable<int>>
@@ -152,6 +152,63 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
                 Add([1, 2, 3]);
                 Add([]);
                 Add(Enumerable.Repeat(5, 100));
+            }
+        }
+
+        [ClassData(typeof(ListShouldContainElementTestData))]
+        [Theory]
+        public void List_ShouldContainElement(IEnumerable<int> values, int target, bool expected)
+        {
+            // Arrange
+            var list = CreateList(values);
+
+            // Act
+            var contains = list.Contains(target);
+
+            Assert.Equal(expected, contains);
+        }
+
+        private class ListShouldContainElementTestData
+            : TheoryDataContainer.ThreeArg<IEnumerable<int>, int, bool>
+        {
+            public ListShouldContainElementTestData()
+            {
+                Add([1, 2, 3], 4, false);
+                Add([1, 2, 3], 3, true);
+                Add([], 0, false);
+                Add(Enumerable.Repeat(5, 100), 5, true);
+            }
+        }
+
+        [ClassData(typeof(InsertBeforeElementTestData))]
+        [Theory]
+        public void InsertBeforeElementTest(
+            IEnumerable<int> values,
+            int target,
+            int value,
+            IEnumerable<int> expected
+        )
+        {
+            // Arrange
+            var list = CreateList(values);
+
+            // Act
+            bool insertResult = list.InsertBefore(target, value);
+
+            Assert.Equal(expected, list.Select(lv => lv.Value));
+            Assert.True(list.Select(lv => lv.Value).SequenceEqual(values) ^ insertResult);
+        }
+
+        private class InsertBeforeElementTestData
+            : TheoryDataContainer.FourArg<IEnumerable<int>, int, int, IEnumerable<int>>
+        {
+            public InsertBeforeElementTestData()
+            {
+                Add([1, 2, 3], 2, 4, [1, 4, 2, 3]);
+                Add([1, 2, 3], 1, 4, [4, 1, 2, 3]);
+                Add([1, 2, 3], 3, 4, [1, 2, 4, 3]);
+                Add([1, 2, 3], 5, 4, [1, 2, 3]);
+                Add([1, 2, 4, 2, 3], 2, 10, [1, 10, 2, 4, 2, 3]);
             }
         }
     }

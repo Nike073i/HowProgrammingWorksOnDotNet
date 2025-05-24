@@ -26,6 +26,21 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
                 AddLast(val);
         }
 
+        // Ignoring top element
+        private Node? FindBefore(Node top, T value) =>
+            Traverse(top).FirstOrDefault(n => n.Next != null && n.Next.Value!.Equals(value));
+
+        public bool InsertBefore(T target, T value)
+        {
+            var beforeNode = FindBefore(_head, target);
+            if (beforeNode is null)
+                return false;
+            var node = new Node { Value = value };
+            node.Next = beforeNode.Next;
+            beforeNode.Next = node;
+            return true;
+        }
+
         public void AddFirst(T value)
         {
             var node = new Node { Value = value };
@@ -70,14 +85,28 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<ListValue<T>> GetEnumerator()
         {
-            var tmp = _head.Next;
+            foreach (var node in Traverse(_head.Next))
+                yield return new(node.Value);
+        }
+
+        private IEnumerable<Node> Traverse(Node? node)
+        {
+            var tmp = node;
             while (tmp != null)
             {
-                yield return tmp.Value;
+                yield return tmp;
                 tmp = tmp.Next;
             }
+        }
+
+        public bool Contains(T value) => Traverse(_head.Next).Any(n => n.Value!.Equals(value));
+
+        public void ForEach(Action<T> action)
+        {
+            foreach (var node in Traverse(_head.Next))
+                action(node.Value);
         }
     }
 }
