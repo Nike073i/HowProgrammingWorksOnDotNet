@@ -211,5 +211,64 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
                 Add([1, 2, 4, 2, 3], 2, 10, [1, 10, 2, 4, 2, 3]);
             }
         }
+
+        [ClassData(typeof(RemoveElementTestData))]
+        [Theory]
+        public void RemoveElementTests(
+            IEnumerable<int> values,
+            int target,
+            IEnumerable<int> expected
+        )
+        {
+            // Arrange
+            var list = CreateList(values);
+
+            // Act
+            var removedNode = list.Remove(target);
+
+            Assert.Equal(expected, list.Select(lv => lv.Value));
+        }
+
+        private class RemoveElementTestData
+            : TheoryDataContainer.ThreeArg<IEnumerable<int>, int, IEnumerable<int>>
+        {
+            public RemoveElementTestData()
+            {
+                Add([1, 2, 3], 1, [2, 3]);
+                Add([1, 2, 3], 2, [1, 3]);
+                Add([1, 2, 3], 3, [1, 2]);
+                Add([1, 2, 3], 5, [1, 2, 3]);
+            }
+        }
+
+        [Fact]
+        public void RemoveAndAppend()
+        {
+            // Arrange
+            var list = CreateList([1, 2, 3]);
+
+            // Act
+            list.Remove(3);
+            list.AddLast(4);
+            list.AddLast(5);
+
+            // Assert
+            Assert.Equal([1, 2, 4, 5], list.Select(lv => lv.Value));
+        }
+
+        [Fact]
+        public void ClearAndAppend()
+        {
+            // Arrange
+            var list = CreateList([1, 2, 3]);
+
+            // Act
+            list.Clear();
+            list.AddLast(4);
+            list.AddLast(5);
+
+            // Assert
+            Assert.Equal([4, 5], list.Select(lv => lv.Value));
+        }
     }
 }

@@ -55,7 +55,11 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
             _tail = node;
         }
 
-        public void Clear() => _head.Next = null;
+        public void Clear()
+        {
+            _head.Next = null;
+            _tail = _head;
+        }
 
         public ListValue<T>? RemoveFirst()
         {
@@ -107,6 +111,21 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         {
             foreach (var node in Traverse(_head.Next))
                 action(node.Value);
+        }
+
+        public ListValue<T>? Remove(T target)
+        {
+            var beforeNode = FindBefore(_head, target);
+            if (beforeNode is null)
+                return null;
+
+            if (beforeNode.Next == _tail)
+                return RemoveLast();
+
+            var removedNode = beforeNode.Next;
+            beforeNode.Next = removedNode!.Next;
+            removedNode.Next = null;
+            return new(removedNode.Value);
         }
     }
 }

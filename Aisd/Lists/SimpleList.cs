@@ -131,5 +131,26 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         }
 
         public bool Contains(T value) => Traverse(_head).Any(n => n.Value!.Equals(value));
+
+        public ListValue<T>? Remove(T target)
+        {
+            if (_head is null)
+                return null;
+
+            if (_head.Value!.Equals(target))
+                return RemoveFirst();
+
+            var beforeNode = FindBefore(_head, target);
+            if (beforeNode is null)
+                return null;
+
+            if (beforeNode.Next == _tail)
+                return RemoveLast();
+
+            var removedNode = beforeNode.Next!;
+            beforeNode.Next = removedNode!.Next;
+            removedNode.Next = null;
+            return new(removedNode.Value);
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         void Clear();
         bool Contains(T value);
         bool InsertBefore(T target, T value);
+        ListValue<T>? Remove(T target);
         ListValue<T>? RemoveLast();
         ListValue<T>? RemoveFirst();
     }
