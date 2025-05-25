@@ -15,5 +15,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         ListValue<T>? Remove(T target);
         ListValue<T>? RemoveLast();
         ListValue<T>? RemoveFirst();
+        void ShiftLeft(T target, int count);
+        void ShiftRight(T target, int count);
     }
 }

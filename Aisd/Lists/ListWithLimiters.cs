@@ -127,5 +127,15 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
             removedNode.Next = null;
             return new(removedNode.Value);
         }
+
+        public void ShiftLeft(T target, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShiftRight(T target, int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 {
-    public class SimpleList<T> : IList<T>
+    public class OneLinkedWithoutTail<T> : IList<T>
     {
         private class Node
         {
@@ -10,32 +10,27 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
             public Node? Next { get; set; }
         }
 
-        private Node? _head;
-        private Node? _tail;
+        private readonly Node _head;
 
-        public SimpleList() { }
+        public OneLinkedWithoutTail()
+        {
+            var limiter = new Node() { Value = default! };
+            _head = limiter;
+        }
 
-        public SimpleList(IEnumerable<T> values)
+        public OneLinkedWithoutTail(IEnumerable<T> values)
+            : this()
         {
             foreach (var val in values)
                 AddLast(val);
         }
 
-        // Ignoring top elements
+        // Ignoring top element
         private Node? FindBefore(Node top, T value) =>
             Traverse(top).FirstOrDefault(n => n.Next != null && n.Next.Value!.Equals(value));
 
         public bool InsertBefore(T target, T value)
         {
-            if (_head == null)
-                return false;
-
-            if (_head.Value!.Equals(target))
-            {
-                AddFirst(value);
-                return true;
-            }
-
             var beforeNode = FindBefore(_head, target);
             if (beforeNode is null)
                 return false;
@@ -48,67 +43,37 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         public void AddFirst(T value)
         {
             var node = new Node { Value = value };
-            if (_head is null)
-            {
-                _head = _tail = node;
-                return;
-            }
-            node.Next = _head;
-            _head = node;
+            node.Next = _head.Next;
+            _head.Next = node;
         }
 
         public void AddLast(T value)
         {
             var node = new Node { Value = value };
-            if (_head is null)
-            {
-                _head = _tail = node;
-                return;
-            }
-
-            _tail!.Next = node;
-            _tail = node;
+            var afterMe = Traverse(_head).TakeLast(1).First();
+            afterMe.Next = node;
         }
 
-        public void Clear()
-        {
-            _head = _tail = null;
-        }
+        public void Clear() => _head.Next = null;
 
         public ListValue<T>? RemoveFirst()
         {
-            if (_head is null)
+            var node = _head.Next;
+            if (node == null)
                 return null;
 
-            var node = _head;
-
-            if (_head == _tail)
-                _head = _tail = null;
-            else
-                _head = _head.Next;
-
+            _head.Next = node.Next;
             return ListValue<T>.Of(node.Value);
         }
 
         public ListValue<T>? RemoveLast()
         {
-            if (_head is null)
+            if (_head.Next == null)
                 return null;
 
-            var tmp = _head;
-            if (_head == _tail)
-            {
-                _head = _tail = null;
-                return ListValue<T>.Of(tmp.Value);
-            }
-
-            while (tmp!.Next != _tail)
-            {
-                tmp = tmp.Next;
-            }
-            tmp.Next = null;
-            var value = _tail!.Value;
-            _tail = tmp;
+            var newLast = Traverse(_head).TakeLast(2).First();
+            var value = newLast.Next!.Value;
+            newLast.Next = null;
             return ListValue<T>.Of(value);
         }
 
@@ -116,13 +81,13 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 
         public IEnumerator<ListValue<T>> GetEnumerator()
         {
-            foreach (var node in Traverse(_head))
+            foreach (var node in Traverse(_head.Next))
                 yield return new(node.Value);
         }
 
-        private IEnumerable<Node> Traverse(Node? top)
+        private IEnumerable<Node> Traverse(Node? node)
         {
-            var tmp = top;
+            var tmp = node;
             while (tmp != null)
             {
                 yield return tmp;
@@ -130,35 +95,35 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
             }
         }
 
-        public bool Contains(T value) => Traverse(_head).Any(n => n.Value!.Equals(value));
+        public bool Contains(T value) => Traverse(_head.Next).Any(n => n.Value!.Equals(value));
+
+        public void ForEach(Action<T> action)
+        {
+            foreach (var node in Traverse(_head.Next))
+                action(node.Value);
+        }
 
         public ListValue<T>? Remove(T target)
         {
-            if (_head is null)
-                return null;
-
-            if (_head.Value!.Equals(target))
-                return RemoveFirst();
-
             var beforeNode = FindBefore(_head, target);
             if (beforeNode is null)
                 return null;
 
-            if (beforeNode.Next == _tail)
+            if (beforeNode.Next!.Next == null)
                 return RemoveLast();
 
-            var removedNode = beforeNode.Next!;
+            var removedNode = beforeNode.Next;
             beforeNode.Next = removedNode!.Next;
             removedNode.Next = null;
             return new(removedNode.Value);
         }
 
-        public void ShiftLeft(T target, int count)
+        public void ShiftRight(T target, int count)
         {
             throw new NotImplementedException();
         }
 
-        public void ShiftRight(T target, int count)
+        public void ShiftLeft(T target, int count)
         {
             throw new NotImplementedException();
         }

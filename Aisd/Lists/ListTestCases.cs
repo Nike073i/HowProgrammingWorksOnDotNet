@@ -48,6 +48,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
             {
                 Add([10, 20, 30]);
                 Add([]);
+                // Без tail - это займет уйму времени, поскольку будет (50 000 * 50 001 / 2) = 1250 025 000 проходок. С tail - 50_000
                 Add(Enumerable.Range(0, 50_000));
             }
         }
@@ -269,6 +270,82 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
 
             // Assert
             Assert.Equal([4, 5], list.Select(lv => lv.Value));
+        }
+
+        [ClassData(typeof(ShiftLeftTestData))]
+        [Theory]
+        public virtual void ShiftLeft(
+            IEnumerable<int> values,
+            int target,
+            int count,
+            IEnumerable<int> expected
+        )
+        {
+            // Arrange
+            var list = CreateList(values);
+
+            // Act
+            list.ShiftLeft(target, count);
+
+            // Assert
+            Assert.Equal(expected, list.Select(lv => lv.Value));
+        }
+
+        private class ShiftLeftTestData
+            : TheoryDataContainer.FourArg<IEnumerable<int>, int, int, IEnumerable<int>>
+        {
+            public ShiftLeftTestData()
+            {
+                Add([1, 2, 3, 4, 5], 6, 1, [1, 2, 3, 4, 5]);
+                Add([1, 2, 3, 4, 5], 5, 1, [1, 2, 3, 5, 4]);
+                Add([1, 2, 3, 4, 5], 5, 2, [1, 2, 5, 3, 4]);
+                Add([1, 2, 3, 4, 5], 5, 3, [1, 5, 2, 3, 4]);
+                Add([1, 2, 3, 4, 5], 5, 4, [5, 1, 2, 3, 4]);
+                Add([1, 2, 3, 4, 5], 5, 5, [5, 1, 2, 3, 4]);
+                Add([1, 2, 3, 4, 5], 5, 6, [5, 1, 2, 3, 4]);
+                Add([], 0, 1, []);
+                Add([1], 1, 1, [1]);
+                Add([1], 1, 2, [1]);
+                Add([1, 2, 3], 2, 0, [1, 2, 3]);
+            }
+        }
+
+        [ClassData(typeof(ShiftRightTestData))]
+        [Theory]
+        public virtual void ShiftRight(
+            IEnumerable<int> values,
+            int target,
+            int count,
+            IEnumerable<int> expected
+        )
+        {
+            // Arrange
+            var list = CreateList(values);
+
+            // Act
+            list.ShiftRight(target, count);
+
+            // Assert
+            Assert.Equal(expected, list.Select(lv => lv.Value));
+        }
+
+        private class ShiftRightTestData
+            : TheoryDataContainer.FourArg<IEnumerable<int>, int, int, IEnumerable<int>>
+        {
+            public ShiftRightTestData()
+            {
+                Add([1, 2, 3, 4, 5], 6, 1, [1, 2, 3, 4, 5]);
+                Add([1, 2, 3, 4, 5], 1, 1, [2, 1, 3, 4, 5]);
+                Add([1, 2, 3, 4, 5], 1, 2, [2, 3, 1, 4, 5]);
+                Add([1, 2, 3, 4, 5], 1, 3, [2, 3, 4, 1, 5]);
+                Add([1, 2, 3, 4, 5], 1, 4, [2, 3, 4, 5, 1]);
+                Add([1, 2, 3, 4, 5], 1, 5, [2, 3, 4, 5, 1]);
+                Add([1, 2, 3, 4, 5], 1, 6, [2, 3, 4, 5, 1]);
+                Add([], 0, 1, []);
+                Add([1], 1, 1, [1]);
+                Add([1], 1, 2, [1]);
+                Add([1, 2, 3], 2, 0, [1, 2, 3]);
+            }
         }
     }
 }

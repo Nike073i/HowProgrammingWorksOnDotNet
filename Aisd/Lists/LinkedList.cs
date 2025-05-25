@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Specialized;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 {
@@ -31,8 +32,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 
         public bool InsertBefore(T target, T value)
         {
-            var targetNode = DirectTraverse(_head.Next!)
-                .FirstOrDefault(n => n.Value!.Equals(target));
+            var targetNode = FindElement(target);
             if (targetNode is null)
                 return false;
 
@@ -128,12 +128,46 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 
         public ListValue<T>? Remove(T target)
         {
-            var removedNode = DirectTraverse(_head.Next!)
-                .FirstOrDefault(n => n.Value!.Equals(target));
+            var removedNode = FindElement(target);
             if (removedNode is null)
                 return null;
             InternalRemoveNode(removedNode.Prev!, removedNode.Next!, removedNode);
             return new(removedNode.Value);
+        }
+
+        private Node? FindElement(T target) =>
+            DirectTraverse(_head.Next!).FirstOrDefault(n => n.Value!.Equals(target));
+
+        public void ShiftLeft(T target, int count)
+        {
+            var element = FindElement(target);
+            if (element is null)
+                return;
+
+            var beforeMe = ReverseTraverse(element.Prev!).Take(count).LastOrDefault();
+
+            // Элемент уже в крайней позиции
+            if (beforeMe is null)
+                return;
+
+            InternalRemoveNode(element.Prev!, element.Next!, element);
+            InternalInsertNode(beforeMe.Prev!, beforeMe, element);
+        }
+
+        public void ShiftRight(T target, int count)
+        {
+            var element = FindElement(target);
+            if (element is null)
+                return;
+
+            var afterMe = DirectTraverse(element.Next!).Take(count).LastOrDefault();
+
+            // Элемент уже в крайней позиции
+            if (afterMe is null)
+                return;
+
+            InternalRemoveNode(element.Prev!, element.Next!, element);
+            InternalInsertNode(afterMe, afterMe.Next!, element);
         }
     }
 }

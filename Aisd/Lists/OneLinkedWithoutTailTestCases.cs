@@ -1,11 +1,11 @@
 namespace HowProgrammingWorksOnDotNet.Aisd.Lists.Tests
 {
-    public class SimpleListTestCases : ListTestCases
+    public class OneLinkedWithoutTailTestCases : ListTestCases
     {
-        protected override IList<int> CreateList() => new SimpleList<int>();
+        protected override IList<int> CreateList() => new OneLinkedWithoutTail<int>();
 
         protected override IList<int> CreateList(IEnumerable<int> values) =>
-            new SimpleList<int>(values);
+            new OneLinkedWithoutTail<int>(values);
 
         public override void ShiftLeft(
             IEnumerable<int> values,
