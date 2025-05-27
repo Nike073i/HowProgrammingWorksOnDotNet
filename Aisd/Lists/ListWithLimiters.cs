@@ -1,8 +1,9 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.Lists
 {
-    public class ListWithLimiters<T> : IList<T>
+    public class ListWithLimiter<T> : IList<T>
     {
         private class Node
         {
@@ -13,13 +14,13 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         private readonly Node _head;
         private Node _tail;
 
-        public ListWithLimiters()
+        public ListWithLimiter()
         {
             var limiter = new Node() { Value = default! };
             _head = _tail = limiter;
         }
 
-        public ListWithLimiters(IEnumerable<T> values)
+        public ListWithLimiter(IEnumerable<T> values)
             : this()
         {
             foreach (var val in values)
@@ -44,6 +45,8 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         public void AddFirst(T value)
         {
             var node = new Node { Value = value };
+            if (_head.Next == null)
+                _tail = node;
             node.Next = _head.Next;
             _head.Next = node;
         }
@@ -68,6 +71,9 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
                 return null;
 
             _head.Next = node.Next;
+            if (_head.Next == null)
+                _tail = _head;
+
             return ListValue<T>.Of(node.Value);
         }
 
