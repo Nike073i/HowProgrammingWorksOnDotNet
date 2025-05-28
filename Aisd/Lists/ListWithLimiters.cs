@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.Lists
@@ -99,6 +100,27 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Lists
         {
             foreach (var node in Traverse(_head.Next))
                 yield return new(node.Value);
+        }
+
+        public void ReverseInPlace()
+        {
+            if (_head == _tail)
+                return;
+
+            var first = _head.Next;
+            var last = _tail;
+
+            Node? prev = null;
+            var tmp = first;
+            while (tmp != null)
+            {
+                var next = tmp.Next;
+                tmp.Next = prev;
+                prev = tmp;
+                tmp = next;
+            }
+            _head.Next = last;
+            _tail = first!;
         }
 
         private IEnumerable<Node> Traverse(Node? node)
