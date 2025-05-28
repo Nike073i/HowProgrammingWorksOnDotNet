@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using HowProgrammingWorksOnDotNet.Documents.JSON.Newtonsoft.Data;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.Lists;
 
@@ -7,7 +8,7 @@ public class HasCycle
     private class Node
     {
         public int Value { get; set; }
-        public Node? Next;
+        public Node? Next { get; set; }
     }
 
     private Node CreateListWithCycle()
@@ -48,5 +49,47 @@ public class HasCycle
             tmp = next;
         }
         Assert.NotNull(tmp);
+    }
+
+    [Fact]
+    public void HasCycle_RabbitAndTurtle()
+    {
+        var root = CreateListWithCycle();
+
+        var turtle = root;
+        var rabbit = root.Next;
+
+        while (rabbit != null && rabbit != turtle)
+        {
+            rabbit = rabbit.Next?.Next;
+            turtle = turtle.Next!;
+        }
+        Assert.NotNull(rabbit);
+    }
+
+    private class DoubleNode
+    {
+        public int Value { get; set; }
+        public DoubleNode? Next { get; set; }
+        public DoubleNode? Prev { get; set; }
+    }
+
+    [Fact]
+    public void HasCycle_DoubleLinkList()
+    {
+        var nodes = Enumerable.Range(0, 12).Select(i => new DoubleNode { Value = i }).ToArray();
+        for (int i = 1; i < nodes.Length; i++)
+        {
+            nodes[i].Prev = nodes[i - 1];
+            nodes[i - 1].Next = nodes[i];
+        }
+        nodes.Last().Next = nodes[5];
+
+        var root = nodes.First();
+        var tmp = root;
+        while (tmp.Next != null && tmp.Next.Prev == tmp)
+            tmp = tmp.Next;
+
+        Assert.NotNull(tmp.Next);
     }
 }
