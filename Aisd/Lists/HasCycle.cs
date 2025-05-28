@@ -32,4 +32,21 @@ public class HasCycle
 
         Assert.NotNull(tmp);
     }
+
+    [Fact]
+    public void HasCycle_Reverse()
+    {
+        var root = CreateListWithCycle();
+
+        var prev = root;
+        var tmp = root.Next;
+        while (tmp != null && tmp != root)
+        {
+            var next = tmp.Next;
+            tmp.Next = prev;
+            prev = tmp;
+            tmp = next;
+        }
+        Assert.NotNull(tmp);
+    }
 }
