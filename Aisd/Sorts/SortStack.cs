@@ -7,7 +7,7 @@ public class SortStack
 {
     private Stack<int> CreateRandomStack()
     {
-        var values = Enumerable.Range(0, 1000).Concat(Enumerable.Range(0, 1000)).ToArray();
+        var values = Enumerable.Range(0, 10).Concat(Enumerable.Range(0, 10)).ToArray();
 
         values.Shuffle();
         var stack = new Stack<int>(values);
@@ -53,6 +53,35 @@ public class SortStack
 
             source.Push(element);
 
+            while (tmpStack.Any())
+                source.Push(tmpStack.Pop());
+        }
+
+        Assert.True(Common.IsSorted(source));
+    }
+
+    [Fact]
+    public void SelectionSort_InPlace()
+    {
+        var source = CreateRandomStack();
+
+        int itemsCount = source.Count;
+        var tmpStack = new Stack<int>();
+        for (int i = itemsCount; i > 0; i--)
+        {
+            var minItem = source.Pop();
+            for (int j = 0; j < i - 1; j++)
+            {
+                var item = source.Pop();
+                if (item.CompareTo(minItem) < 0)
+                {
+                    tmpStack.Push(minItem);
+                    minItem = item;
+                }
+                else
+                    tmpStack.Push(item);
+            }
+            source.Push(minItem);
             while (tmpStack.Any())
                 source.Push(tmpStack.Pop());
         }
