@@ -17,7 +17,26 @@ public class SortStack
     }
 
     [Fact]
-    public void InsertionSort_InPlace_1()
+    public void InsertionSort_InPlace()
+    {
+        var source = CreateRandomStack();
+        var tmp = new Stack<int>(source);
+        source.Clear();
+
+        while (tmp.Any())
+        {
+            var element = tmp.Pop();
+            while (source.Any() && element.CompareTo(source.Peek()) < 0)
+                tmp.Push(source.Pop());
+
+            source.Push(element);
+        }
+
+        Assert.True(Common.IsSorted(source));
+    }
+
+    [Fact]
+    public void InsertionSort_InPlace_Bad_Custom_Impl()
     {
         var source = CreateRandomStack();
 
@@ -36,25 +55,6 @@ public class SortStack
 
             while (tmpStack.Any())
                 source.Push(tmpStack.Pop());
-        }
-
-        Assert.True(Common.IsSorted(source));
-    }
-
-    [Fact]
-    public void InsertionSort_InPlace_2()
-    {
-        var source = CreateRandomStack();
-        var tmp = new Stack<int>(source);
-        source.Clear();
-
-        while (tmp.Any())
-        {
-            var element = tmp.Pop();
-            while (source.Any() && element.CompareTo(source.Peek()) < 0)
-                tmp.Push(source.Pop());
-
-            source.Push(element);
         }
 
         Assert.True(Common.IsSorted(source));
