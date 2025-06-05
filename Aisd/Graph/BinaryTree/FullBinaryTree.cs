@@ -1,4 +1,5 @@
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.AbstractStructures;
 
@@ -25,11 +26,17 @@ public class FullBinaryTree<T> : IEnumerable<T>
     public bool IsEmpty => Count == 0;
     public bool IsFull => Count == _size;
 
+    private int GetStartIndexByLevel(int level) => (int)Math.Pow(2, level) - 1;
+
+    private int GetEndIndexByLevel(int level) => (int)Math.Pow(2, level + 1) - 2;
+
     private int GetLeftChildIndex(int parentIndex) => parentIndex * 2 + 1;
 
     private int GetRightChildIndex(int parentIndex) => parentIndex * 2 + 2;
 
     private int GetParentIndex(int childIndex) => (childIndex - 1) / 2;
+
+    public int GetNodeLevel(int index) => (int)Math.Log2(index + 1);
 
     public void Set(int index, T Value)
     {
@@ -63,6 +70,12 @@ public class FullBinaryTree<T> : IEnumerable<T>
         return _values[--Count];
     }
 
+    public IEnumerable<T> GetLevelNodes(int level)
+    {
+        for (int i = GetStartIndexByLevel(level); i <= GetEndIndexByLevel(level) && i < Count; i++)
+            yield return _values[i];
+    }
+
     public IEnumerator<T> GetEnumerator()
     {
         for (int i = 0; i < Count; i++)
@@ -92,5 +105,18 @@ public class FullBinaryTreeArrayTests
         tree.Set(tree.Get(root.LeftChildIndex)!.RightChildIndex, 12);
 
         Assert.Equal([1, 11, 3, 4, 12, 6, 7, 8, 9, 10], tree);
+
+        Assert.Equal([1], tree.GetLevelNodes(0));
+        Assert.Equal([11, 3], tree.GetLevelNodes(1));
+        Assert.Equal([4, 12, 6, 7], tree.GetLevelNodes(2));
+        Assert.Equal([8, 9, 10], tree.GetLevelNodes(3));
+
+        Assert.Equal(0, tree.GetNodeLevel(0));
+        Assert.Equal(1, tree.GetNodeLevel(1));
+        Assert.Equal(1, tree.GetNodeLevel(2));
+        Assert.Equal(2, tree.GetNodeLevel(3));
+        Assert.Equal(2, tree.GetNodeLevel(4));
+        Assert.Equal(2, tree.GetNodeLevel(5));
+        Assert.Equal(2, tree.GetNodeLevel(6));
     }
 }
