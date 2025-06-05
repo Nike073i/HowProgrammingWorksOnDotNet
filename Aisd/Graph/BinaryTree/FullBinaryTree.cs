@@ -41,7 +41,7 @@ public class FullBinaryTree<T> : IEnumerable<T>
     public void Set(int index, T Value)
     {
         if (Count < index)
-            return;
+            throw new IndexOutOfRangeException();
 
         _values[index] = Value;
     }
