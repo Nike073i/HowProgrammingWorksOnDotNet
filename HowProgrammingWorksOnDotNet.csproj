@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <DefineConstants>TYPE_ALIAS_FLAG</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
