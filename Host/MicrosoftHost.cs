@@ -44,4 +44,37 @@ public class MicrosoftHost
             .Build();
         await host.RunAsync();
     }
+
+    private class RepeatableTask : BackgroundService
+    {
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+            var token = cts.Token;
+
+            var stopSignal = Observable.FromEvent(h => token.Register(h), _ => { });
+            var task = Observable
+                .Interval(TimeSpan.FromSeconds(1))
+                .TakeUntil(stopSignal)
+                .ForEachAsync(async i =>
+                {
+                    // Просто для примера. По сути запустится еще несколько тасок
+                    if (i > 10)
+                        cts.Cancel();
+                    await Task.Delay(500);
+                    Console.WriteLine($"Task {i} Completed");
+                });
+            return task;
+        }
+    }
+
+    [Fact]
+    public async Task WorkerWithRepeatableTask()
+    {
+        using var host = Microsoft
+            .Extensions.Hosting.Host.CreateDefaultBuilder()
+            .ConfigureServices(s => s.AddHostedService<RepeatableTask>())
+            .Build();
+        await host.RunAsync();
+    }
 }
