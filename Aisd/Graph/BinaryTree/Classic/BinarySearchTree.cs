@@ -4,6 +4,8 @@ using Xunit.Sdk;
 
 namespace HowProgrammingWorksOnDotNet.Aisd.Graph.BinaryTree.Classic;
 
+#region Contracts
+
 public interface IBinarySearchTree<T> : IEnumerable<T>
 {
     void Add(T value);
@@ -11,13 +13,19 @@ public interface IBinarySearchTree<T> : IEnumerable<T>
     bool TryRemove(T target);
 }
 
-public class BinarySearchTreeTests
+#endregion
+
+#region Tests
+
+public abstract class BinarySearchTreeTests
 {
+    protected abstract IBinarySearchTree<int> CreateTree(IEnumerable<int> values);
+
     [Fact]
     public void Usage()
     {
         int[] initialValues = [7, 1, 4, 0, 10, 15, -5, 20, 6, 4, 2];
-        var bst = new BinarySearchTreeClassic<int>(initialValues);
+        var bst = CreateTree(initialValues);
 
         Assert.Equal([-5, 0, 1, 2, 4, 4, 6, 7, 10, 15, 20], bst);
         Assert.True(bst.Contains(0));
@@ -62,7 +70,7 @@ public class BinarySearchTreeTests
     public void SaveDataWithPreOrderTraversal()
     {
         int[] initialValues = [7, 1, 4, 0, 10, 15, -5, 20, 6, 4, 2];
-        var tree = new BinarySearchTreeClassic<int>(initialValues);
+        var tree = new BinarySearchTreeIterative<int>(initialValues);
 
         int[] inOrder = [-5, 0, 1, 2, 4, 4, 6, 7, 10, 15, 20];
 
@@ -71,13 +79,23 @@ public class BinarySearchTreeTests
         var backup = tree.Backup();
         Assert.Equal([7, 1, 0, -5, 4, 2, 6, 4, 10, 15, 20], tree);
 
-        var fromBackup = new BinarySearchTreeClassic<int>(backup);
+        var fromBackup = new BinarySearchTreeIterative<int>(backup);
 
         Assert.Equal(inOrder, fromBackup);
     }
 }
 
-public class BinarySearchTreeClassic<T>() : IBinarySearchTree<T>
+#endregion
+
+#region Iterative
+
+public class BinarySearchTreeIterativeTests : BinarySearchTreeTests
+{
+    protected override IBinarySearchTree<int> CreateTree(IEnumerable<int> values) =>
+        new BinarySearchTreeIterative<int>(values);
+}
+
+public class BinarySearchTreeIterative<T>() : IBinarySearchTree<T>
     where T : IComparable<T>, IMinMaxValue<T>
 {
     private class Node
@@ -89,35 +107,16 @@ public class BinarySearchTreeClassic<T>() : IBinarySearchTree<T>
 
     private readonly Node _root = new Node { Value = T.MinValue };
 
-    public BinarySearchTreeClassic(IEnumerable<T> values)
+    public BinarySearchTreeIterative(IEnumerable<T> values)
         : this()
     {
         foreach (var val in values)
             Add(val);
     }
 
-    public void Add(T value) => InternalIterativeAdd(_root, value);
-
-    private void InternalRecursiveAdd(Node parent, T value)
+    public void Add(T value)
     {
-        if (value.CompareTo(parent.Value) >= 0)
-        {
-            if (parent.Right == null)
-                parent.Right = new Node { Value = value };
-            else
-                InternalRecursiveAdd(parent.Right, value);
-        }
-        else
-        {
-            if (parent.Left == null)
-                parent.Left = new Node { Value = value };
-            else
-                InternalRecursiveAdd(parent.Left, value);
-        }
-    }
-
-    private void InternalIterativeAdd(Node current, T value)
-    {
+        var current = _root;
         var node = new Node { Value = value };
         while (true)
         {
@@ -162,20 +161,7 @@ public class BinarySearchTreeClassic<T>() : IBinarySearchTree<T>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    private bool RecursiveContains(Node? node, T target)
-    {
-        if (node == null)
-            return false;
-
-        if (node.Value.Equals(target))
-            return true;
-
-        if (node.Value.CompareTo(target) > 0)
-            return RecursiveContains(node.Left, target);
-        return RecursiveContains(node.Right, target);
-    }
-
-    private bool IterativeContains(T target)
+    public bool Contains(T target)
     {
         var tmp = _root.Right;
         while (tmp != null)
@@ -190,10 +176,6 @@ public class BinarySearchTreeClassic<T>() : IBinarySearchTree<T>
         }
         return false;
     }
-
-    public bool Contains(T target) => IterativeContains(target);
-
-    public bool RecursiveContains(T target) => RecursiveContains(_root.Right, target);
 
     public bool TryRemove(T target)
     {
@@ -228,13 +210,13 @@ public class BinarySearchTreeClassic<T>() : IBinarySearchTree<T>
                 while (tmp.Right!.Right != null)
                     tmp = tmp.Right;
 
-                var minNode = tmp.Right;
+                var maxNode = tmp.Right;
                 tmp.Right = tmp.Right.Left;
 
-                minNode.Left = removable.Left;
-                minNode.Right = removable.Right;
+                maxNode.Left = removable.Left;
+                maxNode.Right = removable.Right;
 
-                replacement = minNode;
+                replacement = maxNode;
             }
         }
 
@@ -266,3 +248,131 @@ public class BinarySearchTreeClassic<T>() : IBinarySearchTree<T>
         }
     }
 }
+
+#endregion
+
+#region Recursive
+
+public class BinarySearchTreeRecursiveTests : BinarySearchTreeTests
+{
+    protected override IBinarySearchTree<int> CreateTree(IEnumerable<int> values) =>
+        new BinarySearchTreeRecursive<int>(values);
+}
+
+public class BinarySearchTreeRecursive<T>() : IBinarySearchTree<T>
+    where T : IMinMaxValue<T>, IComparable<T>
+{
+    private class Node
+    {
+        public T Value;
+        public Node? Left;
+        public Node? Right;
+
+        public void Add(T value)
+        {
+            ref var child = ref value.CompareTo(Value) >= 0 ? ref Right : ref Left;
+            if (child == null)
+                child = new Node { Value = value };
+            else
+                child.Add(value);
+        }
+
+        public bool Contains(T target)
+        {
+            if (Value.Equals(target))
+                return true;
+
+            ref var child = ref target.CompareTo(Value) >= 0 ? ref Right : ref Left;
+            if (child == null)
+                return false;
+            return child.Contains(target);
+        }
+
+        public void InOrderTraverse(Action<T> handler)
+        {
+            Left?.InOrderTraverse(handler);
+            handler(Value);
+            Right?.InOrderTraverse(handler);
+        }
+
+        public void PreOrderTraverse(Action<T> handler)
+        {
+            handler(Value);
+            Left?.PreOrderTraverse(handler);
+            Right?.PreOrderTraverse(handler);
+        }
+
+        public bool TryRemove(T target, ref Node? parentLink)
+        {
+            if (!Value.Equals(target))
+            {
+                if (target.CompareTo(Value) < 0)
+                    return Left?.TryRemove(target, ref Left) ?? false;
+                else
+                    return Right?.TryRemove(target, ref Right) ?? false;
+            }
+
+            if (Right == null)
+                parentLink = Left;
+            else if (Left == null)
+                parentLink = Right;
+            else
+            {
+                var maxNode = Left.Max();
+                Left.TryRemove(maxNode.Value, ref Left);
+                Value = maxNode.Value;
+            }
+            return true;
+        }
+
+        public Node Min() => Left == null ? this : Left.Min();
+
+        public Node Max() => Right == null ? this : Right.Max();
+    }
+
+    private readonly Node _root = new() { Value = T.MinValue };
+
+    public BinarySearchTreeRecursive(IEnumerable<T> values)
+        : this()
+    {
+        foreach (var val in values)
+            Add(val);
+    }
+
+    public void Add(T value) => _root.Add(value);
+
+    public bool Contains(T value) => _root.Contains(value);
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        if (IsEmpty)
+            return Enumerable.Empty<T>().GetEnumerator();
+
+        var list = new List<T>();
+        _root.Right!.InOrderTraverse(list.Add);
+        return list.GetEnumerator();
+    }
+
+    public IEnumerable<T> Backup()
+    {
+        if (IsEmpty)
+            return [];
+
+        var list = new List<T>();
+        _root.Right!.PreOrderTraverse(list.Add);
+        return list;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public bool IsEmpty => _root.Right == null;
+
+    public bool TryRemove(T target)
+    {
+        if (IsEmpty)
+            return false;
+        return _root.Right!.TryRemove(target, ref _root.Right);
+    }
+}
+
+#endregion
