@@ -8,7 +8,7 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Graph.BinaryTree.Classic;
 
 public interface IBinarySearchTree<T> : IEnumerable<T>
 {
-    void Add(T value);
+    bool Add(T value);
     bool Contains(T target);
     bool TryRemove(T target);
 }
@@ -27,7 +27,7 @@ public abstract class BinarySearchTreeTests
         int[] initialValues = [7, 1, 4, 0, 10, 15, -5, 20, 6, 4, 2];
         var bst = CreateTree(initialValues);
 
-        Assert.Equal([-5, 0, 1, 2, 4, 4, 6, 7, 10, 15, 20], bst);
+        Assert.Equal([-5, 0, 1, 2, 4, 6, 7, 10, 15, 20], bst);
         Assert.True(bst.Contains(0));
         Assert.True(bst.Contains(-5));
         Assert.True(bst.Contains(20));
@@ -44,18 +44,18 @@ public abstract class BinarySearchTreeTests
         Assert.False(bst.TryRemove(-2));
 
         Assert.True(bst.TryRemove(15));
-        Assert.Equal([-5, 0, 1, 2, 4, 4, 6, 7, 10, 20], bst);
+        Assert.Equal([-5, 0, 1, 2, 4, 6, 7, 10, 20], bst);
 
         Assert.True(bst.TryRemove(7));
-        Assert.Equal([-5, 0, 1, 2, 4, 4, 6, 10, 20], bst);
+        Assert.Equal([-5, 0, 1, 2, 4, 6, 10, 20], bst);
 
         bst.Add(5);
-        Assert.Equal([-5, 0, 1, 2, 4, 4, 5, 6, 10, 20], bst);
-
-        Assert.True(bst.TryRemove(4));
         Assert.Equal([-5, 0, 1, 2, 4, 5, 6, 10, 20], bst);
 
         Assert.True(bst.TryRemove(4));
+        Assert.Equal([-5, 0, 1, 2, 5, 6, 10, 20], bst);
+
+        Assert.False(bst.TryRemove(4));
         Assert.Equal([-5, 0, 1, 2, 5, 6, 10, 20], bst);
 
         bst.Add(-4);
@@ -63,16 +63,16 @@ public abstract class BinarySearchTreeTests
         bst.Add(5);
         bst.Add(7);
         bst.Add(14);
-        Assert.Equal([-5, -4, 0, 1, 2, 3, 5, 5, 6, 7, 10, 14, 20], bst);
+        Assert.Equal([-5, -4, 0, 1, 2, 3, 5, 6, 7, 10, 14, 20], bst);
     }
 
     [Fact]
     public void SaveDataWithPreOrderTraversal()
     {
-        int[] initialValues = [7, 1, 4, 0, 10, 15, -5, 20, 6, 4, 2];
+        int[] initialValues = [7, 1, 4, 0, 10, 15, -5, 20, 6, 2];
         var tree = new BinarySearchTreeIterative<int>(initialValues);
 
-        int[] inOrder = [-5, 0, 1, 2, 4, 4, 6, 7, 10, 15, 20];
+        int[] inOrder = [-5, 0, 1, 2, 4, 6, 7, 10, 15, 20];
 
         Assert.Equal(inOrder, tree);
 
@@ -114,18 +114,20 @@ public class BinarySearchTreeIterative<T>() : IBinarySearchTree<T>
             Add(val);
     }
 
-    public void Add(T value)
+    public bool Add(T value)
     {
         var current = _root;
         var node = new Node { Value = value };
         while (true)
         {
+            if (value.Equals(current.Value)) return false;
+
             if (value.CompareTo(current.Value) < 0)
             {
                 if (current.Left == null)
                 {
                     current.Left = node;
-                    break;
+                    return true;
                 }
                 else
                     current = current.Left;
@@ -135,7 +137,7 @@ public class BinarySearchTreeIterative<T>() : IBinarySearchTree<T>
                 if (current.Right == null)
                 {
                     current.Right = node;
-                    break;
+                    return true;
                 }
                 current = current.Right;
             }
@@ -268,13 +270,15 @@ public class BinarySearchTreeRecursive<T>() : IBinarySearchTree<T>
         public Node? Left;
         public Node? Right;
 
-        public void Add(T value)
+        public bool Add(T value)
         {
+            if (value.Equals(Value)) return false;
             ref var child = ref value.CompareTo(Value) >= 0 ? ref Right : ref Left;
             if (child == null)
                 child = new Node { Value = value };
             else
                 child.Add(value);
+            return true;
         }
 
         public bool Contains(T target)
@@ -339,7 +343,7 @@ public class BinarySearchTreeRecursive<T>() : IBinarySearchTree<T>
             Add(val);
     }
 
-    public void Add(T value) => _root.Add(value);
+    public bool Add(T value) => _root.Add(value);
 
     public bool Contains(T value) => _root.Contains(value);
 
