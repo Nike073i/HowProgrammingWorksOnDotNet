@@ -1,3 +1,5 @@
+using Rebus.Handlers.Reordering;
+
 namespace HowProgrammingWorksOnDotNet.Aisd.Graph;
 
 public class Graph
@@ -89,6 +91,42 @@ public class Graph
             return clone;
         }
     }
+
+    private record struct Path(int Base, Node First, Node Second, int Cost);
+
+    public Graph CreateDijkstraMinimalGraph(string start)
+    {
+        if (!_nodes.TryGetValue(start, out var startNode)) throw new InvalidOperationException();
+
+        var nodes = new Dictionary<string, Node>();
+        var queue = new PriorityQueue<Path, int>();
+
+        AddNode(startNode, 0);
+
+        while (queue.Count > 0 && nodes.Count < _nodes.Count)
+        {
+            var path = queue.Dequeue();
+            (int @base, var first, var second, int cost) = path;
+
+            if (nodes.ContainsKey(second.Name)) continue;
+
+            var secondClone = AddNode(second, @base + cost);
+
+            nodes[first.Name].LinkWith(secondClone, cost);
+        }
+        return new Graph(nodes);
+
+        Node AddNode(Node orig, int @base)
+        {
+            var clone = new Node(orig.Name);
+            nodes[clone.Name] = clone;
+
+            foreach (var link in orig.Links)
+                queue.Enqueue(new Path(@base, orig, link.ToNode, link.Cost), @base + link.Cost);
+
+            return clone;
+        }
+    }
 }
 
 public class GraphCsvFactory
@@ -119,7 +157,7 @@ public class GraphTests
     [Fact]
     public void Usage()
     {
-        string data =
+        string data1 =
         """
         A, B, 5
         B, C, 1
@@ -130,10 +168,28 @@ public class GraphTests
         A, F, 6
         E, A, 15
         """;
-        var graph = GraphCsvFactory.Create(data);
-        graph.BreadthFirstTtraverse("E", Console.WriteLine);
+        var graph1 = GraphCsvFactory.Create(data1);
+        graph1.BreadthFirstTtraverse("E", Console.WriteLine);
 
-        var mst = graph.CreatePrimMst("A");
+        var mst1 = graph1.CreatePrimMst("A");
+
+        string data2 =
+        """
+        A, B, 9
+        B, C, 10
+        C, G, 11
+        A, D, 10
+        A, E, 15
+        E, G, 11
+        D, F, 12
+        F, H, 12
+        H, G, 13
+        D, E, 10
+        """;
+        var graph2 = GraphCsvFactory.Create(data2);
+
+        var mst2 = graph2.CreatePrimMst("A");
+        var minimalGraph = graph2.CreateDijkstraMinimalGraph("A");
     }
 }
 
