@@ -134,7 +134,6 @@ public class GraphTests
         graph.BreadthFirstTtraverse("E", Console.WriteLine);
 
         var mst = graph.CreatePrimMst("A");
-        int x = 5;
     }
 }
 
