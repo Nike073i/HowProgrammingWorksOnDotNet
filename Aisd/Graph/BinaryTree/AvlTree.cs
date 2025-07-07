@@ -16,24 +16,36 @@ public class AvlTree<T>() : IBinarySearchTree<T>
         // Больше 0 - перегруз справа. Меньше 0 - перегруз слева
         private int GetOverload() => (Right?.Height ?? -1) - (Left?.Height ?? -1);
 
-        public void UpdateHeight() => Height = Math.Max(Left?.Height ?? -1, Right?.Height ?? -1) + 1;
+        public void UpdateHeight() =>
+            Height = Math.Max(Left?.Height ?? -1, Right?.Height ?? -1) + 1;
 
         public bool Add(T value)
         {
-            if (value.Equals(Value)) return false;
+            if (value.Equals(Value))
+                return false;
+
+            bool added;
             ref var child = ref value.CompareTo(Value) >= 0 ? ref Right : ref Left;
             if (child == null)
+            {
                 child = new Node { Value = value };
+                added = true;
+            }
             else
-                child.Add(value);
-            UpdateHeight();
-            Balance();
-            return true;
+                added = child.Add(value);
+
+            if (added)
+            {
+                UpdateHeight();
+                Balance();
+            }
+            return added;
         }
 
         private void RotateToLeft()
         {
-            if (Right == null) throw new InvalidOperationException();
+            if (Right == null)
+                throw new InvalidOperationException();
             (Value, Right.Value) = (Right.Value, Value);
             var tmp = Right;
             Right = Right.Right;
@@ -44,11 +56,11 @@ public class AvlTree<T>() : IBinarySearchTree<T>
             Left.UpdateHeight();
             UpdateHeight();
         }
-        
 
         private void RotateToRight()
         {
-            if (Left == null) throw new InvalidOperationException();
+            if (Left == null)
+                throw new InvalidOperationException();
             (Value, Left.Value) = (Left.Value, Value);
             var tmp = Left;
             Left = Left.Left;
@@ -149,7 +161,8 @@ public class AvlTree<T>() : IBinarySearchTree<T>
             Add(val);
     }
 
-    public bool Add(T value) {
+    public bool Add(T value)
+    {
         if (_root is null)
         {
             _root = new Node { Value = value };
@@ -158,7 +171,6 @@ public class AvlTree<T>() : IBinarySearchTree<T>
         else
             return _root.Add(value);
     }
-
 
     public bool Contains(T value) => _root?.Contains(value) ?? false;
 
@@ -185,13 +197,13 @@ public class AvlTreeTests
 {
     [Fact]
     public void Usage()
-    {   
+    {
         int[] initialValues = [-5, 0, 1, 2, 4, 6, 7, 10, 15, 20];
         var bst = new AvlTree<int>(initialValues);
         Assert.Equal([-5, 0, 1, 2, 4, 6, 7, 10, 15, 20], bst);
 
         var backup = bst.Backup();
 
-        Assert.Equal([2, 0, -5, 1, 10, 6, 4, 7, 15 , 20], backup);
+        Assert.Equal([2, 0, -5, 1, 10, 6, 4, 7, 15, 20], backup);
     }
 }
