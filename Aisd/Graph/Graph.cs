@@ -1,5 +1,3 @@
-using Rebus.Handlers.Reordering;
-
 namespace HowProgrammingWorksOnDotNet.Aisd.Graph;
 
 public class Graph
