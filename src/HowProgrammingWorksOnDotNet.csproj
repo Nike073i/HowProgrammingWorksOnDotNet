@@ -32,7 +32,6 @@
     <ProjectReference
       Include="..\generators\HowProgrammingWorksOnDotNet.Generators.csproj"
       OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
     />
   </ItemGroup>
 </Project>
