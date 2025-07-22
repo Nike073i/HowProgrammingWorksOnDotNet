@@ -12,10 +12,12 @@ public class SpaceCoveringMethodFinderWayByJumping : IFinderWayByJumping
     public bool CanJump(int[] nums)
     {
         int lastCovering = 0;
-        for (int i = 0; i < nums.Length; i++)
+        int lastPosition = nums.Length - 1;
+        for (int i = 0; i < lastPosition && lastCovering < lastPosition; i++)
         {
             if (i > lastCovering)
                 return false;
+
             lastCovering = Math.Max(lastCovering, i + nums[i]);
         }
         return true;
