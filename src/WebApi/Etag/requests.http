@@ -1,0 +1,36 @@
+## Common variables
+@api = http://localhost:5000
+@mock_id = 1d774dd5-6539-11f0-b4d3-b42e99f6670b
+@mock_etag = fe804a3f-6549-11f0-9310-b42e99f6670b
+
+
+### GetById
+#### Mock data
+GET {{api}}/{{mock_id}}
+
+#### Mock data with Etag
+
+GET {{api}}/{{mock_id}}
+If-None-Match: {{mock_etag}}
+
+#### Custom
+GET {{api}}/5cb84b3f-e479-4602-8e14-d2d37f6dbe32
+If-None-Match: 14212489-2fdb-407e-8da6-b258af184c79
+
+### Create
+POST {{api}}
+Content-Type: application/json
+
+{
+    "value": 15
+}
+
+
+### Increment
+#### Mock data
+PUT {{api}}/{{mock_id}}
+If-Match: {{mock_etag}}
+
+#### Custom
+PUT {{api}}/1d774dd5-6539-11f0-b4d3-b42e99f6670b
+If-Match: fe804a3f-6549-11f0-9310-b42e99f6670b
