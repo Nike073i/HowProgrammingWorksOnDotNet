@@ -1,0 +1,24 @@
+# Common variables
+@api = http://localhost:5000/users
+
+### Get 
+GET {{api}}/1
+
+### Remove
+DELETE {{api}}/1
+
+### Update
+PUT {{api}}/1
+Content-Type: application/json
+
+{
+    "smth": "value"
+}
+
+### Create
+POST {{api}}
+Content-Type: application/json
+
+{
+    "smth": "value"
+}
