@@ -31,7 +31,7 @@ public class FindSubstring
             else if (j == 0)
                 i += offsets.TryGetValue(source[i], out int offset) ? offset : subLength;
             else
-                i += offsets[substring[j]];
+                i += offsets[substring[^(j + 1)]];
         }
         return false;
     }
