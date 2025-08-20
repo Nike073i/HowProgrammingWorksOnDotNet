@@ -1,6 +1,6 @@
 using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
-namespace HowProgrammingWorksOnDotNet.LeetCode.Arrays.SummaryRanges;
+namespace HowProgrammingWorksOnDotNet.LeetCode.Intervals.SummaryRanges;
 
 public class Solution
 {
