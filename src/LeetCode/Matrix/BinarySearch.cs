@@ -14,7 +14,7 @@ public class Solution
         {
             while (left <= right)
             {
-                int middle = (right - left / 2) + left;
+                int middle = (right - left) / 2 + left;
 
                 if (itsTarget(middle))
                     return resolve(middle);
