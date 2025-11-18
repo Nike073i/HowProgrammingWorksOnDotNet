@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/bundle.css" />
+    @* <link rel="stylesheet" href="~/HowProgrammingWorksOnDotNet.styles.css" asp-append-version="true" /> *@
+    @* <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" asp-append-version="true"/> *@
+</head>
+<body>
+    @RenderBody()
+
+    <div class="language-switcher">
+        <a href="?culture=en">English</a> | 
+        <a href="?culture=ru">Русский</a>
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/bundle.js"></script>
+</body>
+</html>

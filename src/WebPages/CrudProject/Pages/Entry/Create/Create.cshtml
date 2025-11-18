@@ -1,0 +1,51 @@
+﻿@page "/Entry/Create"
+@model CrudProject.Pages.Entry.Create.CreateModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+ @* Для cshtml кода используем IViewLocalizer по view (Create.ru.resx) *@
+<p class="tmp">@Localizer["AddNewEntry"]</p>
+<div asp-validation-summary="All"></div>
+<form method="POST">
+    <div id='name-content' class="form-group">
+        <label asp-for="Entry.Content"></label>
+        <input asp-for="Entry.Content" />
+        <span asp-validation-for="Entry.Content" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Entry.Email"></label>
+        <input asp-for="Entry.Email" />
+        <span asp-validation-for="Entry.Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Entry.CreatedAt"></label>
+        <input asp-for="Entry.CreatedAt" />
+        <span asp-validation-for="Entry.CreatedAt" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SelectedCategory">Category</label>
+        <select asp-for="SelectedCategory" 
+                asp-items="Model.Categories"
+                class="form-control">
+            @* <option value="">-- Select Role --</option> *@
+        </select>
+        <span asp-validation-for="SelectedCategory" class="text-danger"></span>
+    </div>
+    
+    <input type="submit" value="@Localizer["Submit"]" />
+</form>
+
+<partial name="_PartialExample" for="Entry.Email"/>
+@* or - <partial name="_PartialExample" model='new { Message = "Welcome!" }' /> или иные другие привязки *@
+@* @{await Html.RenderPartialAsync("_PartialExample");} *@
+
+@section Scripts {
+    <script src="~/pages/entry/logger.js" asp-append-version="true"></script>
+    <script>
+        document.getElementById("name-content").addEventListener("change", logIt);
+    </script>
+}

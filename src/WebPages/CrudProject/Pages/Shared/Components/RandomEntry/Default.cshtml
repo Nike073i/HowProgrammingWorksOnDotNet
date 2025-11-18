@@ -1,0 +1,31 @@
+@model CrudProject.Data.Entry?
+
+<div class="random-entry-card card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">🎲 Случайная запись</h5>
+    </div>
+    <div class="card-body">
+        @if (Model != null)
+        {
+            <div class="mb-3">
+                <strong>Email:</strong>
+                <span class="text-muted">@Model.Email</span>
+            </div>
+            <div class="mb-3">
+                <strong>Содержание:</strong>
+                <p class="mt-1 p-2 bg-light rounded">@Model.Content</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Лайков: @Model.Likes</small>
+                <a href="/Entry/Index" class="btn btn-sm btn-outline-primary">Все записи</a>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted">
+                <p>Пока нет записей</p>
+                <a href="/Entry/Create/Create" class="btn btn-primary">Создать первую</a>
+            </div>
+        }
+    </div>
+</div>

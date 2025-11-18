@@ -1,0 +1,4 @@
+/* Но увы, это не сработает в Runtime Compilation */
+.tmp {
+    background-color: green;
+}

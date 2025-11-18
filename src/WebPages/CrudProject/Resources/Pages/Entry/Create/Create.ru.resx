@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+<data name="AddNewEntry" xml:space="preserve">
+    <value>Добавить новую запись в гостевую книгу.</value>
+</data>
+<data name="Name" xml:space="preserve">
+    <value>Имя</value>
+</data>
+<data name="Email" xml:space="preserve">
+    <value>Электронная почта</value>
+</data>
+<data name="Submit" xml:space="preserve">
+    <value>Отправить</value>
+</data>
+</root>

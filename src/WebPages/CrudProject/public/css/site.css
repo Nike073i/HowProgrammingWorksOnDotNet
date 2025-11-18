@@ -1,0 +1,17 @@
+/* Какой-то большой css-файл с множеством пробелов и ненужных комментариев */
+* {
+    padding: 0;
+    /* Комментарий */
+    margin: 0;
+
+    list-style: none;
+}
+
+/* wwwroot/css/site.css */
+.random-entry-card {
+    border-left: 4px solid #007bff;
+}
+
+.random-entry-card .card-header {
+    background-color: #f8f9fa;
+}

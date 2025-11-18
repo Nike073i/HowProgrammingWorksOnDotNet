@@ -1,0 +1,12 @@
+@model DateTime?
+
+@if (Model == null){
+    <text>Unknown</text>
+} else {
+    if (ViewData.ModelMetadata.IsNullableValueType){
+        @Model.Value.ToString("d")
+    }
+    else {
+        @(((DateTime)Model).ToString("d"))
+    }
+}

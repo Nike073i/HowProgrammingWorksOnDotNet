@@ -1,0 +1,38 @@
+﻿@model List<HowProgrammingWorksOnDotNet.WebMvc.CrudProject.Data.Entry>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h1>MVC Implementation</h1>
+<p>Add your entry to guestbook.</p>
+<form method="post">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Email</th>
+            <th>Content</th>
+            <th>Likes</th>
+            <th>ByTemplate</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in Model)
+        {
+            <tr>
+                <td>@entry.Id</td>
+                <td>@entry.Email</td>
+                <td>@entry.Content</td>
+                <td>@entry.Likes</td>
+                <td>@Html.DisplayFor(model => entry)</td>
+                <td>
+                    <button type="submit" asp-controller="Entry" asp-action="Like" asp-route-id="@entry.Id">like</button>
+                    <a asp-controller="Entry" asp-action="Edit" asp-route-id="@entry.Id">edit</a>
+                    <button type="submit" asp-controller="Entry" asp-action="Delete" asp-route-id="@entry.Id">delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <a asp-controller="Entry" asp-action="Create">Create</a>
+</form>

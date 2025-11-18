@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+<data name="AddNewEntry" xml:space="preserve">
+    <value>Add new guestbook entry.</value>
+</data>
+<data name="Name" xml:space="preserve">
+    <value>Name</value>
+</data>
+<data name="Email" xml:space="preserve">
+    <value>Email</value>
+</data>
+<data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+</data>
+</root>

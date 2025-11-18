@@ -1,0 +1,31 @@
+@* По умолчанию - путь в каталоге - Home/Index  *@
+@* Можно переопределить через @page "/AbsolutePath/ToPage/{categoryName?}" *@
+@page "{id?}"
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">
+        Post-запрос и редирект на 555
+    </button>
+</form>
+
+<div class="text-center">
+    <h1 class="display-4">Index. Доступ к параметру запроса через RouteData</h1>
+    
+    <div class="alert @(RouteData.Values["id"] != null ? "alert-success" : "alert-warning")">
+        @if (RouteData.Values["id"] != null)
+        {
+            <h4>✅ ID найден!</h4>
+            <p><strong>Значение:</strong> @RouteData.Values["id"]</p>
+        }
+        else
+        {
+            <h4>⚠️ ID не найден</h4>
+            <p>Параметр ID не был передан в URL</p>
+        }
+    </div>
+</div>
