@@ -2,6 +2,7 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Strings.ValidAnagram;
 
+// Анаграмма - Числа = Силач
 public class Solution
 {
     public static bool IsAnagramByCounter(string s, string t)
@@ -19,11 +20,52 @@ public class Solution
             lexicon[code]--;
         }
         return true;
+
+        static int GetCharCode(char c) => c - 'a';
     }
 
-    public static bool IsAnagramBySorting(string s, string t) => s.Order().SequenceEqual(t.Order());
+    public static bool IsAnagramBySorting(string s, string t) =>
+        (s.Length == t.Length) && s.Order().SequenceEqual(t.Order());
 
-    private static int GetCharCode(char c) => c - 'a';
+    public static bool IsAnagramBy2Hashtable(string s, string t)
+    {
+        if (s.Length != t.Length)
+            return false;
+
+        static Dictionary<char, int> CreateLexicon(string input)
+        {
+            var dict = new Dictionary<char, int>();
+            foreach (char c in input)
+                dict[c] = dict.GetValueOrDefault(c, 0) + 1;
+
+            return dict;
+        }
+
+        var lexS = CreateLexicon(s);
+        var lexT = CreateLexicon(t);
+
+        return lexS.Count == lexT.Count
+            && lexS.All(kvp => lexT.TryGetValue(kvp.Key, out int value) && value == kvp.Value);
+    }
+
+    public static bool IsAnagramBy1Hashtable(string s, string t)
+    {
+        if (s.Length != t.Length)
+            return false;
+
+        var lexicon = new Dictionary<char, int>();
+        foreach (var c in s)
+            lexicon[c] = lexicon.GetValueOrDefault(c, 0) + 1;
+
+        foreach (char c in t)
+        {
+            if (!lexicon.ContainsKey(c))
+                return false;
+            if (--lexicon[c] == 0)
+                lexicon.Remove(c);
+        }
+        return lexicon.Count == 0;
+    }
 }
 
 public class SolutionTestData : TheoryDataContainer.ThreeArg<string, string, bool>
@@ -47,8 +89,8 @@ public class SolutionTestData : TheoryDataContainer.ThreeArg<string, string, boo
         Add("abcabc", "aabbcc", true);
         Add("abcabc", "aaabbb", false);
         Add("abcdefghijklmnopqrstuvwxyz", "zyxwvutsrqponmlkjihgfedcba", true);
-        Add("banana", "banane", false);
         Add("banana", "banan", false);
+        Add("banana", "banane", false);
     }
 }
 
@@ -67,6 +109,22 @@ public class SolutionTests
     public void TestBySorting(string s, string t, bool expected)
     {
         bool actual = Solution.IsAnagramBySorting(s, t);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestBy2Hashtable(string s, string t, bool expected)
+    {
+        bool actual = Solution.IsAnagramBy2Hashtable(s, t);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestBy1Hashtable(string s, string t, bool expected)
+    {
+        bool actual = Solution.IsAnagramBy1Hashtable(s, t);
         Assert.Equal(expected, actual);
     }
 }
