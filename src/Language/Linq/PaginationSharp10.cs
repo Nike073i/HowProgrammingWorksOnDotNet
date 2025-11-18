@@ -16,6 +16,7 @@ public class Pagination
             Console.WriteLine($"Страница - {pageNumber}: {CollToString(pageData)}");
     }
 
+    // Not supported in EFC
     [Fact]
     public void PageByRange()
     {
