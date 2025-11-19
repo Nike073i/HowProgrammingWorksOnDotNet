@@ -2,6 +2,11 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Strings.IsIsomorphic;
 
+/*
+    leetcode: 205 https://leetcode.com/problems/isomorphic-strings/description/
+    time: O(n)
+    memory: O(k), где k - мощность бесконечного алфавита. В задаче используется всего 26 символов, следовательно -> O(1)
+*/
 public class Solution
 {
     private class Map
@@ -10,7 +15,7 @@ public class Solution
         public char? Prev;
     }
 
-    public static bool IsIsomorphic(string s, string t)
+    public static bool IsIsomorphicByStruct(string s, string t)
     {
         if (s.Length != t.Length)
             return false;
@@ -43,6 +48,30 @@ public class Solution
             mapper[c] = map;
         }
         return map;
+    }
+
+    public static bool IsIsomorphicByDoubleHashtable(string s, string t)
+    {
+        if (s.Length != t.Length)
+            return false;
+
+        var s2t = new Dictionary<char, char>();
+        var t2s = new Dictionary<char, char>();
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            char sc = s[i],
+                tc = t[i];
+
+            if (s2t.TryGetValue(sc, out char mapped) && mapped != tc)
+                return false;
+            if (t2s.TryGetValue(tc, out mapped) && mapped != sc)
+                return false;
+
+            s2t[sc] = tc;
+            t2s[tc] = sc;
+        }
+        return true;
     }
 }
 
@@ -85,9 +114,17 @@ public class SolutionTests
 {
     [Theory]
     [ClassData(typeof(SolutionTestData))]
-    public void Test(string s, string t, bool expected)
+    public void TestStructSolution(string s, string t, bool expected)
     {
-        bool actual = Solution.IsIsomorphic(s, t);
+        bool actual = Solution.IsIsomorphicByStruct(s, t);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestDoubleHashtableSolution(string s, string t, bool expected)
+    {
+        bool actual = Solution.IsIsomorphicByDoubleHashtable(s, t);
         Assert.Equal(expected, actual);
     }
 }
