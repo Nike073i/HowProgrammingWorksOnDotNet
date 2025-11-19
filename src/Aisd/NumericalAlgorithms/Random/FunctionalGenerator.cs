@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace HowProgrammingWorksOnDotNet.Aisd.NumericalAlgorithms;
 
 public delegate int RandomGenerator();
@@ -24,6 +26,20 @@ public static class NumericalAlgorithms
             yield return last;
         }
     }
+
+    public static IEnumerable<int> CreateRandomEnumerableByFibonaci(int seed, int max)
+    {
+        int first = 1;
+        int second = seed;
+
+        while (true)
+        {
+            yield return Math.Abs((first + second) % max);
+            var tmp = first + second;
+            second = first;
+            first = tmp;
+        }
+    }
 }
 
 public class FunctionalGeneratorTests
@@ -45,5 +61,14 @@ public class FunctionalGeneratorTests
             .CreateRandomEnumerable(a: 7, b: 5, m: 11, seed: 0)
             .Take(10);
         Assert.Equal(_expectedNumbers, numbers);
+    }
+
+    [Fact]
+    public void CreateRandomEnumerableByFibonaci()
+    {
+        var numbers = NumericalAlgorithms
+            .CreateRandomEnumerableByFibonaci(seed: 1011, max: 10)
+            .Take(100);
+        Console.WriteLine(string.Join(", ", numbers));
     }
 }
