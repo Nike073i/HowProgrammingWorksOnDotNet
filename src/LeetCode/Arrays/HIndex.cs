@@ -1,10 +1,15 @@
 using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
-namespace HowProgrammingWorksOnDotNet.LeetCode.Arrays;
+namespace HowProgrammingWorksOnDotNet.LeetCode.Arrays.HIndex;
 
+/*
+    leetcode: 274 https://leetcode.com/problems/h-index/description/
+    time: O(N) для ByCount.
+    memory: O(N) для ByCount.
+*/
 public class HIndex
 {
-    public static int Calculate(int[] citations)
+    public static int CalculateBySort(int[] citations)
     {
         var sortedCitations = citations.Order().ToArray();
 
@@ -15,15 +20,69 @@ public class HIndex
         }
         return 0;
     }
+
+    public static int CalculateBySortReverse(int[] citations)
+    {
+        int[] sortedCitations = [.. citations.Order()];
+        int index = 0;
+
+        /*
+            for (int i = sortedCitations.Length - 1; i >= 0 && sortedCitations[i] > index; i--, index++) { }
+        */
+
+        for (int i = sortedCitations.Length - 1; i >= 0; i--)
+        {
+            if (sortedCitations[i] > index)
+                index++;
+            else
+                return index;
+        }
+        return index;
+    }
+
+    public static int CalculateByCount(int[] citations)
+    {
+        int publications = citations.Length;
+        int[] counts = new int[publications + 1];
+
+        foreach (int count in citations)
+            counts[Math.Min(count, publications)]++;
+
+        int acc = 0;
+        for (int i = counts.Length - 1; i >= 0; i--)
+        {
+            acc += counts[i];
+            if (acc >= i)
+                return i;
+        }
+
+        return acc;
+    }
 }
 
 public class HIndexTests
 {
     [Theory]
     [ClassData(typeof(HIndexTestData))]
-    public void Tests(int[] citations, int expected)
+    public void TestBySort(int[] citations, int expected)
     {
-        int actual = HIndex.Calculate(citations);
+        int actual = HIndex.CalculateBySort(citations);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(HIndexTestData))]
+    public void TestReverse(int[] citations, int expected)
+    {
+        int actual = HIndex.CalculateBySortReverse(citations);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(HIndexTestData))]
+    public void TestByCount(int[] citations, int expected)
+    {
+        int actual = HIndex.CalculateByCount(citations);
         Assert.Equal(expected, actual);
     }
 }
