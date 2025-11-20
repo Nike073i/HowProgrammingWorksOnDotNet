@@ -2,36 +2,41 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Matrix.ValidSudoku;
 
+/*
+    leetcode:
+    time: O(n^2) -> O(1). Кол-во клеток всего 36
+    memory: O(n^2) -> O(1). Кол-во клеток всего 36
+    notes:
+    - Существует 3 правила валидности судоку:
+        1. Нет дублей на строке
+        2. Нет дублей на столбце
+        3. Нет дублей в клетке
+    - Для проверки дублей используем 3 хешсета вида (i, v), где i - индекс (строки, столбца или клетки), v - значение.
+    - Индекс клетки высчитывается по формуле r / 3 * 3 + c / 3;
+*/
 public class Solution
 {
     public static bool IsValidSudoku(char[][] board)
     {
-        var dict = new Dictionary<char, List<(int, int)>>();
-        for (int i = 0; i < 10; i++)
-        {
-            char c = i.ToString()[0];
-            dict[c] = [];
-        }
+        static int GetBlockIndex(int i, int j) => i / 3 * 3 + j / 3;
+        var rows = new HashSet<(int, char)>();
+        var cols = new HashSet<(int, char)>();
+        var blocks = new HashSet<(int, char)>();
 
         for (int i = 0; i < board.Length; i++)
         {
             for (int j = 0; j < board[i].Length; j++)
             {
                 char c = board[i][j];
-                if (char.IsDigit(c))
-                    dict[c].Add((i, j));
+                if (c == '.')
+                    continue;
+
+                if (!rows.Add((i, c)) || !cols.Add((j, c)) || !blocks.Add((GetBlockIndex(i, j), c)))
+                    return false;
             }
         }
 
-        return dict.All(kvp =>
-        {
-            var tuples = kvp.Value;
-            return tuples
-                    .DistinctBy(t => t.Item1)
-                    .Intersect(tuples.DistinctBy(t => t.Item2))
-                    .Intersect(tuples.DistinctBy(t => (t.Item1 / 3, t.Item2 / 3)))
-                    .Count() == tuples.Count;
-        });
+        return true;
     }
 }
 
