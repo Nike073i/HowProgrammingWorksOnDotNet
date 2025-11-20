@@ -16,32 +16,30 @@ public class Solution
 
         var counts = new Dictionary<char, int>();
         foreach (var c in p)
-            counts[c] = counts.GetValueOrDefault(c, 0) - 1;
+            Decrement(c);
 
         var output = new List<int>();
 
         for (int i = 0; i < s.Length; i++)
         {
-            char currentChar = s[i];
-
-            int count = counts.GetValueOrDefault(currentChar, 0);
-            if (count == -1)
-                counts.Remove(currentChar);
-            else
-                counts[currentChar] = count + 1;
+            Increment(s[i]);
 
             if (i >= p.Length)
-            {
-                char leftChar = s[i - p.Length];
-                count = counts.GetValueOrDefault(leftChar, 0);
-                if (count == 1)
-                    counts.Remove(leftChar);
-                else
-                    counts[leftChar] = count - 1;
-            }
+                Decrement(s[i - p.Length]);
 
             if (counts.Count == 0)
                 output.Add(i - p.Length + 1);
+        }
+
+        void Increment(char key) => UpdateCount(key, c => c + 1);
+        void Decrement(char key) => UpdateCount(key, c => c - 1);
+
+        void UpdateCount(char key, Func<int, int> fn)
+        {
+            int count = counts.GetValueOrDefault(key, 0);
+            counts[key] = fn(count);
+            if (counts[key] == 0)
+                counts.Remove(key);
         }
 
         return output;
