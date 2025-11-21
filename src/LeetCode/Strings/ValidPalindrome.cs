@@ -2,6 +2,11 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Strings;
 
+/*
+    leetcode: 125 https://leetcode.com/problems/valid-palindrome/description/
+    time: O(n)
+    memory: O(1)
+*/
 public class ValidPalindrome
 {
     public static bool IsPalindrome(string s)
