@@ -1,6 +1,6 @@
 using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
-namespace HowProgrammingWorksOnDotNet.LeetCode.Arrays.SumTwoBinaryNumbers;
+namespace HowProgrammingWorksOnDotNet.LeetCode.Numbers.SumTwoBinaryNumbers;
 
 public class Solution
 {
