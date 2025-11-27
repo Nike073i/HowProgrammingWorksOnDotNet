@@ -1,33 +1,36 @@
-using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
+namespace HowProgrammingWorksOnDotNet.LeetCode.Strings.LongestSubstringWithoutDuplicates;
 
-namespace HowProgrammingWorksOnDotNet.LeetCode.Strings;
-
-public class LongestSubstringWithoutDuplicates
+/*
+    leetcode: 3 https://leetcode.com/problems/longest-substring-without-repeating-characters/submissions/1841057302/
+    time: O(n)
+    memory: O(k), где k - размер алфавита. Если только en-lowercase - O(1)
+*/
+public class Solution
 {
     public static int LengthOfLongestSubstring(string s)
     {
-        var set = new HashSet<char>();
-        int start = 0;
+        var hashSet = new HashSet<char>();
         int max = 0;
-
-        for (int i = 0; i < s.Length; i++)
+        int l = 0,
+            r = -1;
+        while (l < s.Length)
         {
-            bool added = set.Add(s[i]);
-            if (added)
-                max = Math.Max(max, i - start + 1);
-            if (!added)
+            if (r + 1 < s.Length && hashSet.Add(s[r + 1]))
+                r++;
+            else
             {
-                while (!set.Add(s[i]))
-                    set.Remove(s[start++]);
+                max = Math.Max(max, r - l + 1);
+                hashSet.Remove(s[l]);
+                l++;
             }
         }
         return max;
     }
 }
 
-public class LongestSubstringWithoutDuplicatesTestData : TheoryDataContainer.TwoArg<string, int>
+public class SolutionTestData : TheoryData<string, int>
 {
-    public LongestSubstringWithoutDuplicatesTestData()
+    public SolutionTestData()
     {
         Add("abcabcbb", 3);
         Add("bbbbb", 1);
@@ -49,13 +52,13 @@ public class LongestSubstringWithoutDuplicatesTestData : TheoryDataContainer.Two
     }
 }
 
-public class LongestSubstringWithoutDuplicatesTests
+public class SolutionTests
 {
     [Theory]
-    [ClassData(typeof(LongestSubstringWithoutDuplicatesTestData))]
+    [ClassData(typeof(SolutionTestData))]
     public void Test(string s, int expected)
     {
-        var actual = LongestSubstringWithoutDuplicates.LengthOfLongestSubstring(s);
+        var actual = Solution.LengthOfLongestSubstring(s);
         Assert.Equal(expected, actual);
     }
 }
