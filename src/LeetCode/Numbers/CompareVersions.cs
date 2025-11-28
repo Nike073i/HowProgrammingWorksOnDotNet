@@ -4,6 +4,7 @@ namespace HowProgrammingWorksOnDotNet.LeetCode.Numbers.CompareVersions;
     leetcode: 165 https://leetcode.com/problems/compare-version-numbers/description/
     time: O(max(n, m))
     memory: O(1)
+    notes: Превращаем каждый сегмент в число. Если сегмента нет, то возвращаем 0.
 */
 public class Solution
 {
