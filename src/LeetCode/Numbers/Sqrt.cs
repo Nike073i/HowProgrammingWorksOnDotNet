@@ -28,6 +28,29 @@ public class Solution
         }
         return r;
     }
+
+    public static int PatternSqrt(int x)
+    {
+        // Или r = x + 1, но там проблема с переполнением
+        if (x < 2)
+            return x;
+
+        // l - last good, r - first bad
+        int l = 0,
+            r = x;
+
+        bool IsGood(long val) => (long)val * val <= x;
+        while (r - l > 1)
+        {
+            int middle = l + (r - l) / 2;
+
+            if (IsGood(middle))
+                l = middle;
+            else
+                r = middle;
+        }
+        return l;
+    }
 }
 
 public class SolutionTests
@@ -36,7 +59,15 @@ public class SolutionTests
     [ClassData(typeof(SolutionTestData))]
     public void TestMySqrt(int x, int expected)
     {
-        int actual = Solution.MySqrt(x);
+        int actual = Solution.PatternSqrt(x);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestPatternSqrt(int x, int expected)
+    {
+        int actual = Solution.PatternSqrt(x);
         Assert.Equal(expected, actual);
     }
 }
