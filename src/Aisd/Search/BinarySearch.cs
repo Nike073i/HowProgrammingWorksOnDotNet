@@ -59,3 +59,26 @@ public class IterativeBinarySearch : ISearch
 }
 
 #endregion
+
+
+public class PatternBinarySearch : ISearch
+{
+    public bool Contains(int[] sortedValues, int value)
+    {
+        bool IsGood(int val) => val <= value;
+
+        int l = -1,
+            r = sortedValues.Length;
+
+        while (r - l > 1)
+        {
+            int middle = l + (r - l) / 2;
+            if (IsGood(sortedValues[middle]))
+                l = middle;
+            else
+                r = middle;
+        }
+
+        return sortedValues[l] == value;
+    }
+}
