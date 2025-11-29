@@ -79,6 +79,6 @@ public class PatternBinarySearch : ISearch
                 r = middle;
         }
 
-        return sortedValues[l] == value;
+        return l >= 0 && sortedValues[l] == value;
     }
 }
