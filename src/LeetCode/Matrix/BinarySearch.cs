@@ -44,6 +44,28 @@ public class Solution
         );
         return rowSearch.Find(0, matrix.Length - 1);
     }
+
+    public static bool SearchByFlatten(int[][] matrix, int target)
+    {
+        int rows = matrix.Length;
+        int cols = matrix[0].Length;
+        bool IsGood(int val) => val <= target;
+        int GetByIndex(int flatIndex) => matrix[flatIndex / cols][flatIndex % cols];
+
+        int l = 0,
+            r = rows * cols;
+
+        while (r - l > 1)
+        {
+            int middle = l + (r - l) / 2;
+            if (IsGood(GetByIndex(middle)))
+                l = middle;
+            else
+                r = middle;
+        }
+
+        return GetByIndex(l) == target;
+    }
 }
 
 public class SolutionTests
@@ -327,7 +349,7 @@ public class SolutionTestData : TheoryDataContainer.ThreeArg<int[][], int, bool>
             6,
             false
         );
-       
+
         Add(
             [
                 [1, 2, 3, 4, 5],
