@@ -2,6 +2,11 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Intervals.MergeIntervals;
 
+/*
+    leetcode: 56 https://leetcode.com/problems/merge-intervals/description/
+    time: O(nlogn) за счет сортировки
+    memory: O(n)
+*/
 public class Solution
 {
     public static int[][] Merge(int[][] intervals)
@@ -23,6 +28,28 @@ public class Solution
         result.Add((start, end));
         return [.. result.Select(t => new int[] { t.Item1, t.Item2 })];
     }
+
+    public static int[][] MergeByPattern(int[][] intervals)
+    {
+        bool IsOverlaps(int[] first, int[] second) =>
+            Math.Max(first[0], second[0]) <= Math.Min(first[1], second[1]);
+        int[] Combine(int[] first, int[] second) =>
+            [Math.Min(first[0], second[0]), Math.Max(first[1], second[1])];
+
+        var sortedIntervals = intervals.OrderBy(interval => interval[0]).ToArray();
+        List<int[]> result = [];
+
+        result.Add(sortedIntervals[0]);
+
+        foreach (var interval in sortedIntervals.Skip(1))
+        {
+            if (IsOverlaps(result[^1], interval))
+                result[^1] = Combine(result[^1], interval);
+            else
+                result.Add(interval);
+        }
+        return [.. result];
+    }
 }
 
 public class SolutionTests
@@ -36,7 +63,7 @@ public class SolutionTests
     }
 }
 
-public class SolutionTestData : TheoryDataContainer.TwoArg<int[][], int[][]>
+public class SolutionTestData : TheoryData<int[][], int[][]>
 {
     public SolutionTestData()
     {
