@@ -2,6 +2,11 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Matrix.BinarySearch;
 
+/*
+    leetcode: 74 https://leetcode.com/problems/search-a-2d-matrix/description/
+    time: O(log(n * m))
+    memory: O(1)
+*/
 public class Solution
 {
     private class Search(
@@ -75,6 +80,14 @@ public class SolutionTests
     public void Test(int[][] matrix, int target, bool expected)
     {
         bool actual = Solution.SearchMatrix(matrix, target);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestFlatten(int[][] matrix, int target, bool expected)
+    {
+        bool actual = Solution.SearchByFlatten(matrix, target);
         Assert.Equal(expected, actual);
     }
 }
