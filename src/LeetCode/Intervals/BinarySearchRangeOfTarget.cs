@@ -2,6 +2,11 @@ using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.Intervals.BinarySearchRangeOfTarget;
 
+/*
+    leetcode: 34 https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array
+    time: O(logn)
+    memory: O(1)
+*/
 public class Solution
 {
     public static int[] SearchRange(int[] nums, int target)
@@ -36,6 +41,40 @@ public class Solution
 
         return idx;
     }
+
+    public static int[] SearchByPattern(int[] nums, int target)
+    {
+        if (nums.Length == 0)
+            return [-1, -1];
+
+        static (int, int) BinarySearch(int l, int r, Predicate<int> isGood)
+        {
+            while (r - l > 1)
+            {
+                int middle = l + (r - l) / 2;
+                if (isGood(middle))
+                    l = middle;
+                else
+                    r = middle;
+            }
+            return (l, r);
+        }
+
+        (int _, int firstPos) = BinarySearch(
+            l: -1,
+            r: nums.Length,
+            isGood: (ind) => nums[ind] < target
+        );
+        if (firstPos >= nums.Length || nums[firstPos] != target)
+            return [-1, -1];
+
+        (int lastPos, _) = BinarySearch(
+            l: -1,
+            r: nums.Length,
+            isGood: (ind) => nums[ind] <= target
+        );
+        return [firstPos, lastPos];
+    }
 }
 
 public class SolutionTests
@@ -45,6 +84,14 @@ public class SolutionTests
     public void Test(int[] nums, int target, int[] expected)
     {
         int[] actual = Solution.SearchRange(nums, target);
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestPattern(int[] nums, int target, int[] expected)
+    {
+        int[] actual = Solution.SearchByPattern(nums, target);
         Assert.Equal(expected, actual);
     }
 }
