@@ -1,5 +1,3 @@
-using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
-
 namespace HowProgrammingWorksOnDotNet.LeetCode.Intervals.MergeIntervals;
 
 /*
