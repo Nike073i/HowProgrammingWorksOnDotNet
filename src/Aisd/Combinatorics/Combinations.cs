@@ -49,16 +49,22 @@ public class Combinations
     [Fact]
     public void PrintCombinations_Recursive() => PrintCombinations(GetCombinations_Recursive);
 
-    // "Растущий список: ({([""], d), c, cd }, b, bd, bc, bcd )..."
-    public IEnumerable<string> GetCombinations_Iterative(string source)
+    // "Растущий список"
+    /*
+        []
+        [] a
+        [] a b ab
+        [] a b ab c ac bc abc
+    */
+    public IEnumerable<string> GetCombinations_Iterative(string letters)
     {
         var combinations = new List<string> { "" };
 
-        for (int i = source.Length - 1; i >= 0; i--)
+        foreach (var letter in letters)
         {
             int currentCount = combinations.Count;
-            for (int j = 0; j < currentCount; j++)
-                combinations.Add(source[i] + combinations[j]);
+            for (int i = 0; i < currentCount; i++)
+                combinations.Add(combinations[i] + letter);
         }
 
         return combinations;
