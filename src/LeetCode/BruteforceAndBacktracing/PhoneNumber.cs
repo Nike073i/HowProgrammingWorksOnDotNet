@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace HowProgrammingWorksOnDotNet.LeetCode.BruteforceAndBacktracing.PhoneNumber;
 
 /*
@@ -31,11 +33,27 @@ public class Solution
             AddLetters(output, prefix + l, digits, index + 1);
     }
 
-    public static IList<string> LetterCombinations(string digits)
+    public static IList<string> LetterCombinations_Recursive(string digits)
     {
         var output = new List<string>();
         AddLetters(output, "", digits, 0);
         return output;
+    }
+
+    public static IList<string> LetterCombinations_Iterative(string digits)
+    {
+        var output = new Queue<string>();
+        output.Enqueue("");
+        while (output.Peek().Length < digits.Length)
+        {
+            var prefix = output.Dequeue();
+            var letters = _digit2letters[digits[prefix.Length]];
+
+            foreach (var letter in letters)
+                output.Enqueue(prefix + letter);
+        }
+
+        return [.. output];
     }
 }
 
@@ -45,7 +63,19 @@ public class SolutionTests
     [ClassData(typeof(SolutionTestData))]
     public void TestLetterCombinations(string digits, List<string> expected)
     {
-        var actual = Solution.LetterCombinations(digits);
+        var actual = Solution.LetterCombinations_Recursive(digits);
+
+        var sortedExpected = expected.Order();
+        var sortedActual = actual.Order();
+
+        Assert.True(sortedExpected.SequenceEqual(sortedActual));
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestLetterCombinations_Iterative(string digits, List<string> expected)
+    {
+        var actual = Solution.LetterCombinations_Iterative(digits);
 
         var sortedExpected = expected.Order();
         var sortedActual = actual.Order();
