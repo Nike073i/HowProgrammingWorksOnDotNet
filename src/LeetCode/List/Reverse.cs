@@ -1,4 +1,4 @@
-namespace HowProgrammingWorksOnDotNet.LeetCode.List;
+namespace HowProgrammingWorksOnDotNet.LeetCode.List.Reverse;
 
 /*
     leetcode: 206 https://leetcode.com/problems/reverse-linked-list/description/
@@ -13,7 +13,7 @@ public class ListNode(int val = 0, ListNode next = null)
 
 public class Solution
 {
-    public ListNode ReverseList(ListNode head)
+    public static ListNode ReverseList(ListNode head)
     {
         ListNode? prev = null;
         ListNode curr = head;
