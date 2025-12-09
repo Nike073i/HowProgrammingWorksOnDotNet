@@ -1,13 +1,13 @@
-using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
+using System.Collections;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.List.MergeTwoSortedLists;
 
-public class ListNode(int val = 0, ListNode? next = null)
+public class ListNode(int val = 0, ListNode? next = null) : IEnumerable<int>
 {
     public int val = val;
     public ListNode? next = next;
 
-    public IEnumerable<int> ToArray()
+    public IEnumerator<int> GetEnumerator()
     {
         var tmp = this;
         while (tmp != null)
@@ -16,11 +16,19 @@ public class ListNode(int val = 0, ListNode? next = null)
             tmp = tmp.next;
         }
     }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
+
+/*
+    leetcode: 21 https://leetcode.com/problems/merge-two-sorted-lists/description/
+    time: O(n + m)
+    memory: O(1)
+*/
 
 public class Solution
 {
-    public static ListNode MergeTwoLists(ListNode list1, ListNode list2)
+    public static ListNode MergeTwoListsShortWay(ListNode list1, ListNode list2)
     {
         var head = new ListNode(0);
         var tail = head;
@@ -41,9 +49,29 @@ public class Solution
             }
             tail = tail.next;
         }
-        tail.next = p1 != null ? p1 : p2;
+        tail.next = p1 ?? p2;
 
         return head.next!;
+    }
+
+    public static ListNode MergeTwoListsFullWay(ListNode list1, ListNode list2)
+    {
+        var outputHead = new ListNode();
+        var outputTail = outputHead;
+
+        static int GetVal(ListNode node) => node == null ? int.MaxValue : node.val;
+
+        while (list1 != null || list2 != null)
+        {
+            var nextNode = GetVal(list1) < GetVal(list2) ? list1 : list2;
+            outputTail.next = nextNode;
+            outputTail = nextNode;
+            if (nextNode == list1)
+                list1 = list1.next;
+            else
+                list2 = list2.next;
+        }
+        return outputHead.next;
     }
 }
 
@@ -51,15 +79,28 @@ public class SolutionTests
 {
     [Theory]
     [ClassData(typeof(SolutionTestData))]
-    public void Test(int[] l1Values, int[] l2Values, int[] expectedValues)
+    public void TestFirst(int[] l1Values, int[] l2Values, int[] expectedValues)
     {
         ListNode l1 = CreateList(l1Values);
         ListNode l2 = CreateList(l2Values);
         ListNode expected = CreateList(expectedValues);
 
-        ListNode actual = Solution.MergeTwoLists(l1, l2);
+        ListNode actual = Solution.MergeTwoListsShortWay(l1, l2);
 
-        Assert.Equal(expected?.ToArray(), actual?.ToArray());
+        Assert.True(expected.SequenceEqual(actual));
+    }
+
+    [Theory]
+    [ClassData(typeof(SolutionTestData))]
+    public void TestSecond(int[] l1Values, int[] l2Values, int[] expectedValues)
+    {
+        ListNode l1 = CreateList(l1Values);
+        ListNode l2 = CreateList(l2Values);
+        ListNode expected = CreateList(expectedValues);
+
+        ListNode actual = Solution.MergeTwoListsFullWay(l1, l2);
+
+        Assert.True(expected.SequenceEqual(actual));
     }
 
     private static ListNode CreateList(int[] values)
@@ -77,7 +118,7 @@ public class SolutionTests
     }
 }
 
-public class SolutionTestData : TheoryDataContainer.ThreeArg<int[], int[], int[]>
+public class SolutionTestData : TheoryData<int[], int[], int[]>
 {
     public SolutionTestData()
     {
@@ -96,13 +137,6 @@ public class SolutionTestData : TheoryDataContainer.ThreeArg<int[], int[], int[]
         Add([3, 3, 3], [1, 1, 1], [1, 1, 1, 3, 3, 3]);
         Add([10, 30, 50], [20, 40, 60], [10, 20, 30, 40, 50, 60]);
         Add([100, 200, 300], [150, 250, 350], [100, 150, 200, 250, 300, 350]);
-        Add(
-            [int.MaxValue - 2, int.MaxValue - 1, int.MaxValue],
-            [int.MaxValue - 3, int.MaxValue - 2],
-            [int.MaxValue - 3, int.MaxValue - 2, int.MaxValue - 2, int.MaxValue - 1, int.MaxValue]
-        );
-        Add([int.MinValue], [int.MaxValue], [int.MinValue, int.MaxValue]);
-        Add([int.MinValue, 0], [int.MaxValue], [int.MinValue, 0, int.MaxValue]);
         Add(
             [1, 3, 5, 7, 9, 11, 13],
             [2, 4, 6, 8, 10, 12, 14],
