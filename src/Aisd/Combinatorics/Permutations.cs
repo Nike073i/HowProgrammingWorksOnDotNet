@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Diagnostics;
+
 namespace HowProgrammingWorksOnDotNet.Aisd.Combinatorics;
 
 /*
@@ -36,6 +38,11 @@ namespace HowProgrammingWorksOnDotNet.Aisd.Combinatorics;
                 [bacd]
 */
 
+/*
+    leetcode: 46 https://leetcode.com/problems/permutations/description/
+    time: O(n! * n)
+    memory: O(n! * n)
+*/
 public class Permutations
 {
     public IEnumerable<string> GetPermutations(string src) => GetPermutations(src[..1], src[1..]);
@@ -63,6 +70,43 @@ public class Permutations
             foreach (var pl in placements)
                 yield return pl;
         }
+    }
+
+    public IEnumerable<string> PermutationsByQueue(string src)
+    {
+        if (src.Length < 1)
+            return [];
+        var queue = new Queue<string>();
+        queue.Enqueue(src[0].ToString());
+        while (queue.Peek().Length < src.Length)
+        {
+            var prefix = queue.Dequeue();
+            var nextSymbol = src[prefix.Length].ToString();
+            for (int i = 0; i <= prefix.Length; i++)
+                queue.Enqueue(prefix.Insert(i, nextSymbol));
+        }
+        return queue;
+    }
+
+    public IList<IList<int>> PermutationsByQueue(int[] nums)
+    {
+        if (nums.Length < 1)
+            return [];
+        var queue = new Queue<List<int>>();
+        queue.Enqueue([nums[0]]);
+        while (queue.Peek().Count < nums.Length)
+        {
+            var prefix = queue.Dequeue();
+            var nextDigit = nums[prefix.Count];
+            for (int i = 0; i <= prefix.Count; i++)
+            {
+                var tmp = prefix[..i];
+                tmp.Add(nextDigit);
+                tmp.AddRange(prefix[i..]);
+                queue.Enqueue(tmp);
+            }
+        }
+        return [.. queue];
     }
 
     [Fact]
