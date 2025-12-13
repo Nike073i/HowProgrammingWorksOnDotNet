@@ -1,13 +1,13 @@
-using HowProgrammingWorksOnDotNet.TestUtils.TheoryData;
+using System.Collections;
 
 namespace HowProgrammingWorksOnDotNet.LeetCode.List.RemoveNthNodeFromEnd;
 
-public class ListNode(int val = 0, ListNode? next = null)
+public class ListNode(int val = 0, ListNode? next = null) : IEnumerable<int>
 {
     public int val = val;
     public ListNode? next = next;
 
-    public IEnumerable<int> ToArray()
+    public IEnumerator<int> GetEnumerator()
     {
         var tmp = this;
         while (tmp != null)
@@ -16,27 +16,39 @@ public class ListNode(int val = 0, ListNode? next = null)
             tmp = tmp.next;
         }
     }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
+/*
+    leetcode: 19 https://leetcode.com/problems/remove-nth-node-from-end-of-list
+    time: O(n)
+    memory: O(1)
+*/
 public class Solution
 {
     public static ListNode? RemoveNthFromEnd(ListNode head, int n)
     {
-        var f = head;
-        for (int i = 0; i < n; i++)
-            f = f!.next;
+        var stub = new ListNode(0, head);
+        ListNode slow = stub,
+            fast = stub;
 
-        if (f == null)
-            return head.next;
-
-        var s = head;
-        while (f.next != null)
+        while (n >= 0)
         {
-            f = f.next;
-            s = s!.next;
+            fast = fast.next;
+            n--;
         }
-        s!.next = s.next!.next;
-        return head;
+
+        while (fast != null)
+        {
+            slow = slow.next;
+            fast = fast.next;
+        }
+
+        var next = slow.next;
+        slow.next = slow.next.next;
+        next.next = null;
+        return stub.next;
     }
 }
 
@@ -51,7 +63,7 @@ public class SolutionTests
 
         ListNode? actual = Solution.RemoveNthFromEnd(originalList, n);
 
-        Assert.Equal(expectedList.ToArray(), actual?.ToArray());
+        Assert.True(expectedList.SequenceEqual(actual));
     }
 
     private static ListNode CreateList(int[] values)
@@ -69,7 +81,7 @@ public class SolutionTests
     }
 }
 
-public class SolutionTestData : TheoryDataContainer.ThreeArg<int[], int, int[]>
+public class SolutionTestData : TheoryData<int[], int, int[]>
 {
     public SolutionTestData()
     {
